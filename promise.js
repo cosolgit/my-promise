@@ -119,6 +119,9 @@ class Promise {
     });
     return promise2;
   }
+  catch(onRejected) {
+    return this.then(null, onRejected);
+  }
   finally(callback) {
     if (typeof callback != "function") callback = () => {};
     return this.then(
