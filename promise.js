@@ -2,6 +2,7 @@ const PENDING = "pending";
 const RESOLVED = "resolved";
 const REJECTED = "rejected";
 
+const isFunction = cb => typeof cb === "function ";
 let resolvePromise = (promise2, value, resolve, reject) => {
   let called;
   if (value === promise2) return reject(new TypeError("循环引用"));
@@ -163,8 +164,13 @@ class Promise {
     });
   }
   static resolve(value) {
-    return new Promise(resolve => {
-      resolve(value);
+    //如果死promise直接返回
+    if (value instanceof this) return value;
+    return new Promise((resolve, reject) => {
+      //thenable对象 ,异步展开
+      if (value && value.then && isFunction(value.then)) {
+        value.then(resolve, reject);
+      } else resolve(value);
     });
   }
   static rejecte(err) {
@@ -173,5 +179,3 @@ class Promise {
     });
   }
 }
-
-let a = new Promise((resolve, reject) => {});
